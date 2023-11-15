@@ -42,7 +42,7 @@ class ApplicationTest extends NsTest {
     @Test
     void 증정_메뉴_테스트() {
         assertSimpleTest(() -> {
-            run("26", "타파스-1,제로콜라-1");
+            run("26", "타파스-2,제로콜라-1");
             assertThat(output()).contains("<증정 메뉴>" + LINE_SEPARATOR + "없음");
         });
         assertSimpleTest(() -> {
@@ -54,7 +54,7 @@ class ApplicationTest extends NsTest {
     @Test
     void 총혜택_금액_0원_출력() {
         assertSimpleTest(() -> {
-            run("26", "타파스-1,제로콜라-1");
+            run("26", "타파스-2,제로콜라-1");
             assertThat(output()).contains("<총혜택 금액>" + LINE_SEPARATOR + "0원");
         });
     }
@@ -62,7 +62,7 @@ class ApplicationTest extends NsTest {
     @Test
     void 이벤트_배지_테스트() {
         assertSimpleTest(() -> {
-            run("26", "타파스-1,제로콜라-1");
+            run("26", "타파스-2,제로콜라-1");
             assertThat(output()).contains("<12월 이벤트 배지>" + LINE_SEPARATOR + "없음");
         });
 
