@@ -50,7 +50,7 @@ public class InputView {
             orderItems.add(orderItem);
             totalItems += orderItem.getQuantity();
         }
-        InvalidInputException.validateDrinkOnlyAndTotalPrice(orderItems);
+        InvalidInputException.validateDrinkOnly(orderItems);
         return orderItems;
     }
 

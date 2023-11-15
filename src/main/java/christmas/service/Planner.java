@@ -19,9 +19,11 @@ public class Planner {
     }
 
     public void applyEvents(int visitDate) {
-        applyDiscountEvents(visitDate);
-        applyGiftEvents();
-        calculateEventBadge();
+        if (order.getTotalAmount() >= 10000) {
+            applyDiscountEvents(visitDate);
+            applyGiftEvents();
+            calculateEventBadge();
+        }
     }
 
     private void applyDiscountEvents(int visitDate) {

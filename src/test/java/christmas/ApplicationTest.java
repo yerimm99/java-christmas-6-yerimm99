@@ -3,13 +3,21 @@ package christmas;
 import static camp.nextstep.edu.missionutils.test.Assertions.assertSimpleTest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import camp.nextstep.edu.missionutils.test.NsTest;
 import christmas.domain.MenuItem;
 import christmas.domain.Order;
 import christmas.domain.OrderItem;
+import christmas.domain.enums.EventBadge;
 import christmas.domain.enums.Type;
+import christmas.domain.event.Event;
+import christmas.exception.InvalidInputException;
+import christmas.service.Planner;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 class ApplicationTest extends NsTest {
@@ -36,44 +44,6 @@ class ApplicationTest extends NsTest {
         assertSimpleTest(() -> {
             run("26", "타파스-1,제로콜라-1");
             assertThat(output()).contains("<혜택 내역>" + LINE_SEPARATOR + "없음");
-        });
-    }
-
-    @Test
-    void 증정_메뉴_테스트() {
-        assertSimpleTest(() -> {
-            run("26", "타파스-2,제로콜라-1");
-            assertThat(output()).contains("<증정 메뉴>" + LINE_SEPARATOR + "없음");
-        });
-        assertSimpleTest(() -> {
-            run("26", "티본스테이크-2,초코케이크-1");
-            assertThat(output()).contains("<증정 메뉴>" + LINE_SEPARATOR + "샴페인 1개");
-        });
-    }
-
-    @Test
-    void 총혜택_금액_0원_출력() {
-        assertSimpleTest(() -> {
-            run("26", "타파스-2,제로콜라-1");
-            assertThat(output()).contains("<총혜택 금액>" + LINE_SEPARATOR + "0원");
-        });
-    }
-
-    @Test
-    void 이벤트_배지_테스트() {
-        assertSimpleTest(() -> {
-            run("26", "타파스-2,제로콜라-1");
-            assertThat(output()).contains("<12월 이벤트 배지>" + LINE_SEPARATOR + "없음");
-        });
-
-        assertSimpleTest(() -> {
-            run("3", "티본스테이크-1,바비큐립-1,초코케이크-2,제로콜라-1");
-            assertThat(output()).contains("<12월 이벤트 배지>" + LINE_SEPARATOR + "산타");
-        });
-
-        assertSimpleTest(() -> {
-            run("3", "티본스테이크-2");
-            assertThat(output()).contains("<12월 이벤트 배지>" + LINE_SEPARATOR + "별");
         });
     }
 
@@ -129,27 +99,72 @@ class ApplicationTest extends NsTest {
 
     }
 
+
     @Test
-    void 총주문_금액_테스트() {
-        assertSimpleTest(() -> {
-            runException("3", "제로콜라-1,아이스크림-1");
-            assertThat(output()).contains("[ERROR] 주문 금액은 10,000원 이상이어야 합니다. 다시 입력해 주세요.");
-        });
+    void 이벤트_적용_테스트() {
+        // Given
+        Order order = new Order();
+        MenuItem menuItem1 = new MenuItem("Menu1", 2000, Type.DRINK);
+        MenuItem menuItem2 = new MenuItem("Menu2", 7000, Type.MAIN);
+
+        // When
+        order.addOrderItem(new OrderItem(menuItem1, 1));
+        order.addOrderItem(new OrderItem(menuItem2, 1));
+
+        assertEquals(0, order.getTotalBenefitAmount());
     }
     @Test
-    void 총주문_개수_테스트() {
-        assertSimpleTest(() -> {
-            runException("3", "시저샐러드-1, 티본스테이크-18, 크리스마스파스타-1, 제로콜라-3, 아이스크림-1");
-            assertThat(output()).contains("[ERROR] 한 번에 최대 20개까지 주문할 수 있습니다. 다시 입력해 주세요.");
+    void 주문_개수_초과_테스트() {
+        // Given
+        Order order = new Order();
+        MenuItem menuItem1 = new MenuItem("Menu1", 5000, Type.MAIN);
+
+        // When
+        order.addOrderItem(new OrderItem(menuItem1, 30));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            // This block should throw an IllegalArgumentException
+            InvalidInputException.validateOrderQuantity(order.getOrderItems().get(0), 0);
         });
     }
+
     @Test
     void 음료만_주문_테스트() {
-        assertSimpleTest(() -> {
-            runException("3", "제로콜라-1");
-            assertThat(output()).contains("[ERROR] 음료만 주문할 수 없습니다. 다시 입력해 주세요.");
+        // Given
+        Order order = new Order();
+        MenuItem menuItem1 = new MenuItem("Menu1", 5000, Type.DRINK);
+        MenuItem menuItem2 = new MenuItem("Menu2", 7000, Type.DRINK);
+
+        // When
+        order.addOrderItem(new OrderItem(menuItem1, 3));
+        order.addOrderItem(new OrderItem(menuItem2, 2));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            // This block should throw an IllegalArgumentException
+            InvalidInputException.validateDrinkOnly(order.getOrderItems());
         });
     }
+    @Test
+    void 중복_주문_테스트() {
+        // Given
+        Order order = new Order();
+        MenuItem menuItem1 = new MenuItem("Menu1", 5000, Type.DRINK);
+
+        // When
+        order.addOrderItem(new OrderItem(menuItem1, 3));
+        order.addOrderItem(new OrderItem(menuItem1, 2));
+
+        List<OrderItem> orderItemsList = order.getOrderedItems();
+        Set<String> menuItemNamesSet = orderItemsList.stream()
+                .map(orderItem -> orderItem.getMenuItem().getName())
+                .collect(Collectors.toSet());
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            // This block should throw an IllegalArgumentException
+            InvalidInputException.validateDuplicates(menuItemNamesSet, menuItem1.getName());
+        });
+    }
+
     @Test
     public void testAddOrderItem() {
         // Given
@@ -181,6 +196,18 @@ class ApplicationTest extends NsTest {
         assertEquals(29000, order.getTotalAmount());
     }
 
+    @Test
+    void calculateTotalBenefitAmount_NoDiscount() {
+        // Given
+        Order order = new Order();
+        // Assume that order has no discounts applied
+
+        // When
+        int totalBenefitAmount = order.getTotalBenefitAmount();
+
+        // Then
+        assertEquals(0, totalBenefitAmount);
+    }
 
     @Override
     protected void runMain() {

@@ -59,22 +59,9 @@ public class InvalidInputException extends RuntimeException {
             throw new IllegalArgumentException("[ERROR] 한 번에 최대 20개까지 주문할 수 있습니다. 다시 입력해 주세요.");
         }
     }
-
-    public static void validateDrinkOnlyAndTotalPrice(List<OrderItem> orderItems) {
-        InvalidInputException.validateDrinkOnly(orderItems);
-        InvalidInputException.validateTotalPrice(orderItems);
-    }
-
     public static void validateDrinkOnly(List<OrderItem> orderItems) {
         if (orderItems.stream().allMatch(oItem -> oItem.getMenuItem().getType() == Type.DRINK)) {
             throw new IllegalArgumentException("[ERROR] 음료만 주문할 수 없습니다. 다시 입력해 주세요.");
-        }
-    }
-
-    public static void validateTotalPrice(List<OrderItem> orderItems) {
-        int totalAmount = orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
-        if (totalAmount < 10000) {
-            throw new IllegalArgumentException("[ERROR] 주문 금액은 10,000원 이상이어야 합니다. 다시 입력해 주세요.");
         }
     }
 }
