@@ -10,7 +10,8 @@ public class DiscountEvent {
     private int initialDiscountAmount;
     private int discountIncrement;
 
-    public DiscountEvent(String name, String description, int startDay, int endDay, int initialDiscountAmount, int discountIncrement) {
+    public DiscountEvent(String name, String description, int startDay, int endDay, int initialDiscountAmount,
+                         int discountIncrement) {
         this.name = name;
         this.description = description;
         this.startDay = startDay;
@@ -48,7 +49,7 @@ public class DiscountEvent {
         return Math.min(totalAmount, initialDiscountAmount);
     }
 
-    public boolean isApplicable(int visitDay){
+    public boolean isApplicable(int visitDay) {
         return false;
     }
 }

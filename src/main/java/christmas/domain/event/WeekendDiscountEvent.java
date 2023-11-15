@@ -1,13 +1,11 @@
 package christmas.domain.event;
 
 import christmas.domain.Order;
-import christmas.service.DateUtil;
-import java.time.LocalDate;
-import java.time.DayOfWeek;
-import org.mockito.internal.matchers.Or;
+import christmas.utils.DateUtil;
 
 public class WeekendDiscountEvent extends DiscountEvent {
     private final Order order;
+
     public WeekendDiscountEvent(Order order) {
         super("주말 할인",
                 "주말에는 메인 메뉴를 메뉴 1개당 2,023원 할인",

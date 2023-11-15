@@ -1,8 +1,6 @@
 package christmas.domain.event;
 
-import christmas.service.DateUtil;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+import christmas.utils.DateUtil;
 
 public class SpecialDiscountEvent extends DiscountEvent {
     public SpecialDiscountEvent() {
@@ -19,6 +17,7 @@ public class SpecialDiscountEvent extends DiscountEvent {
     public int calculateDiscount(int day, int totalAmount) {
         return getInitialDiscountAmount();
     }
+
     @Override
     public boolean isApplicable(int visitDate) {
         return DateUtil.isSpecialDiscount(visitDate);

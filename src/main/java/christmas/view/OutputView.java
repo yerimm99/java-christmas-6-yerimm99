@@ -23,7 +23,7 @@ public class OutputView {
 
     public static void printGiftItem(List<GiftItem> giftItems) {
         System.out.println("\n<증정 메뉴>");
-        if(giftItems.isEmpty()){
+        if (giftItems.isEmpty()) {
             System.out.println("없음");
             return;
         }
@@ -31,7 +31,9 @@ public class OutputView {
             System.out.printf("%s %d개\n", giftItem.getName(), giftItem.getQuantity());
         }
     }
+
     private static List<String> benefitHistory = new ArrayList<>();
+
     public static void addBenefit(String benefit) {
         benefitHistory.add(benefit);
     }
@@ -41,16 +43,17 @@ public class OutputView {
         for (String benefit : benefitHistory) {
             System.out.println(benefit);
         }
-        if(benefitHistory.isEmpty()){
+        if (benefitHistory.isEmpty()) {
             System.out.println("없음");
         }
     }
+
     public static void printTotalBenefitAmount(int totalBenefitAmount) {
         System.out.println("\n<총혜택 금액>");
-        if(totalBenefitAmount > 0) {
+        if (totalBenefitAmount > 0) {
             System.out.printf("-%,d원\n", totalBenefitAmount);
         } else if (totalBenefitAmount == 0) {
-            System.out.println("없음");
+            System.out.println("0원");
         }
     }
 
@@ -64,8 +67,5 @@ public class OutputView {
         System.out.println(eventBadge.getLabel());
     }
 
-    public static void printError(String errorMessage) {
-        System.out.println(errorMessage);
-    }
 }
 

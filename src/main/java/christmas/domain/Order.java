@@ -9,7 +9,6 @@ public class Order {
     private final List<OrderItem> orderItems;
     private int totalAmount;
     private int totalBenefitAmount;
-    private int payAmount;
     private List<GiftItem> giftItems;
     private EventBadge eventBadge;
 
@@ -17,7 +16,6 @@ public class Order {
         this.orderItems = new ArrayList<>();
         this.totalAmount = 0;
         this.totalBenefitAmount = 0;
-        this.payAmount = 0;
         this.giftItems = new ArrayList<>();
         this.eventBadge = EventBadge.NONE;
     }
@@ -30,7 +28,6 @@ public class Order {
     }
 
     public void applyDiscount(int discountAmount) {
-        payAmount -= discountAmount;
         totalBenefitAmount += discountAmount;
     }
 
@@ -65,37 +62,24 @@ public class Order {
     public int getPayAmount() {
         return totalAmount - totalBenefitAmount + calculateTotalGiftItemPrice();
     }
+
     public List<OrderItem> getOrderedItems() {
         return orderItems;
     }
+
     private void calculateTotalAmount() {
         totalAmount = orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
     }
 
     public int countDessertMenus() {
-        int dessertCount = 0;
-        for (OrderItem orderItem : orderItems) {
-            if (orderItem.isDessert()) {
-                dessertCount += orderItem.getQuantity();
-            }
-        }
-        return dessertCount;
+        return orderItems.stream().filter(OrderItem::isDessert).mapToInt(OrderItem::getQuantity).sum();
     }
 
     public int countMainMenus() {
-        int mainCount = 0;
-        for (OrderItem orderItem : orderItems) {
-            if (orderItem.isMain()) {
-                mainCount += orderItem.getQuantity();
-            }
-        }
-        return mainCount;
+        return orderItems.stream().filter(OrderItem::isMain).mapToInt(OrderItem::getQuantity).sum();
     }
 
     public int calculateTotalGiftItemPrice() {
-        return giftItems.stream()
-                .mapToInt(giftItem -> giftItem.getPrice() * giftItem.getQuantity())
-                .sum();
+        return giftItems.stream().mapToInt(giftItem -> giftItem.getPrice() * giftItem.getQuantity()).sum();
     }
-
 }

@@ -1,12 +1,11 @@
 package christmas.domain.event;
 
 import christmas.domain.Order;
-import christmas.service.DateUtil;
-import java.time.LocalDate;
-import java.time.DayOfWeek;
+import christmas.utils.DateUtil;
 
 public class WeekdayDiscountEvent extends DiscountEvent {
     private final Order order;
+
     public WeekdayDiscountEvent(Order order) {
         super("평일 할인",
                 "평일에는 디저트 메뉴를 메뉴 1개당 2,023원 할인",

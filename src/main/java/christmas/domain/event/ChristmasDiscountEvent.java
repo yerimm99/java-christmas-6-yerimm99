@@ -1,8 +1,5 @@
 package christmas.domain.event;
 
-import christmas.service.DateUtil;
-import java.time.LocalDate;
-
 public class ChristmasDiscountEvent extends DiscountEvent {
     public ChristmasDiscountEvent() {
         super("크리스마스 디데이 할인",

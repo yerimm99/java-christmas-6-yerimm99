@@ -29,25 +29,18 @@ public class Planner {
             if (discountEvent.isApplicable(visitDate)) {
                 int discountAmount = discountEvent.calculateDiscount(visitDate, order.getTotalAmount());
                 order.applyDiscount(discountAmount);
-                // 혜택 내역 기록
-                if (discountAmount > 0) {
-                    if(discountEvent.getName().equals("크리스마스 디데이 할인")) {
-                        OutputView.addBenefit("크리스마스 디데이 할인: -" + discountAmount + "원");
-                    }
-                    if(discountEvent.getName().equals("평일 할인")) {
-                        OutputView.addBenefit("평일 할인: -" + discountAmount + "원");
-                    }
-                    if(discountEvent.getName().equals("주말 할인")) {
-                        OutputView.addBenefit("주말 할인: -" + discountAmount + "원");
-                    }
-                    if(discountEvent.getName().equals("특별 할인")) {
-                        OutputView.addBenefit("특별 할인: -" + discountAmount + "원");
-                    }
-                }
+                recordBenefit(discountEvent, discountAmount);
             }
         }
-
     }
+
+    private void recordBenefit(DiscountEvent discountEvent, int discountAmount) {
+        if (discountAmount > 0) {
+            String benefitMessage = discountEvent.getName() + ": -" + discountAmount + "원";
+            OutputView.addBenefit(benefitMessage);
+        }
+    }
+
 
     private void applyGiftEvents() {
         for (GiftEvent giftEvent : event.getGiftEvents()) {
@@ -60,6 +53,7 @@ public class Planner {
             }
         }
     }
+
     private void calculateEventBadge() {
         int totalBenefitAmount = order.getTotalBenefitAmount();
 
@@ -69,17 +63,10 @@ public class Planner {
             order.setEventBadge(EventBadge.TREE);
         } else if (totalBenefitAmount >= 5000) {
             order.setEventBadge(EventBadge.STAR);
-        }else if (totalBenefitAmount < 5000){
+        } else if (totalBenefitAmount < 5000) {
             order.setEventBadge(EventBadge.NONE);
         }
     }
-    private int calculateDiscount(DiscountEvent discountEvent) {
-        int totalAmount = order.getTotalAmount();
-        int discountIncrement = discountEvent.getDiscountIncrement();
-        int discountAmount = Math.min(discountIncrement, totalAmount);
-        return discountAmount;
-    }
-
 
     public void printResult() {
         // 결과 출력
@@ -91,6 +78,7 @@ public class Planner {
         OutputView.printDiscountedAmount(order.getPayAmount());
         OutputView.printEventBadge(order.getEventBadge());
     }
+
     public void applyEventsAndPrintResult(int visitDate) {
         applyEvents(visitDate);  // 이벤트 적용
         printResult();  // 결과 출력
